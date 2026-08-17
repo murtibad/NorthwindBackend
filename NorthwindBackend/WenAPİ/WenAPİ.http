@@ -1,0 +1,6 @@
+@WenAPİ_HostAddress = http://localhost:5119
+
+GET {{WenAPİ_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
