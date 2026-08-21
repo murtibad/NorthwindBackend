@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using Core.Entities.Concrete;
+using Core.Extensions;
 using Core.Utilities.Security.Encryption;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -39,7 +41,7 @@ namespace Core.Utilities.Security.Jwt
 
         private JwtSecurityToken CreateJwtSecurityToken(TokenOptions tokenOptions, User user, SigningCredentials signingCredentials, List<OperationClaim> operationClaims)
         {
-            return new JwtSecurityToken(
+            var jwt = new JwtSecurityToken(
                 issuer: tokenOptions.Issuer,
                 audience: tokenOptions.Audience,
                 expires: _accessTokenExpiration,
@@ -47,21 +49,17 @@ namespace Core.Utilities.Security.Jwt
                 claims: SetClaims(user, operationClaims),
                 signingCredentials: signingCredentials
             );
+
+            return jwt;
         }
 
         private IEnumerable<Claim> SetClaims(User user, List<OperationClaim> operationClaims)
         {
             var claims = new List<Claim>();
-
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
-            claims.Add(new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
-
-            foreach (var operationClaim in operationClaims)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, operationClaim.Name));
-            }
-
+            claims.AddNameIdentifier(user.Id.ToString());
+            claims.AddEmail(user.Email);
+            claims.AddName($"{user.FirstName} {user.LastName}");
+            claims.AddRoles(operationClaims.Select(c => c.Name).ToArray());
             return claims;
         }
     }
