@@ -7,5 +7,8 @@
         public static string ProductUpdated = "Ürün başarıyla güncellendi";
 
         public static string UserNotFound = "Kullanıcı bulunamadı";
+        public static string PasswordError = "Şifre hatalı";
+        public static string SuccessfulLogin = "Sisteme giriş başarılı";
+        public static string UserAlreadyExists = "Bu kullanıcı zaten mevcut";
     }
 }

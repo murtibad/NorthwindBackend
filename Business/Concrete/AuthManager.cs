@@ -2,6 +2,7 @@
 using Business.Constants;
 using Core.Entities.Concrete;
 using Core.Utilities.Results;
+using Core.Utilities.Security.Hashing;
 using Core.Utilities.Security.Jwt;
 using Entities.Dtos;
 using System;
@@ -32,10 +33,24 @@ namespace Business.Concrete
                 return new ErrorDataResult<User>(Messages.UserNotFound);
             }
 
-            throw new NotImplementedException();
+            if (!HashingHelper.VerifyPasswordHash(userForLoginDto.Password, userToCheck.PasswordHash, userToCheck.PasswordSalt))
+            {
+                return new ErrorDataResult<User>(Messages.PasswordError);
+            }
+
+            return new SuccessDataResult<User>(userToCheck, Messages.SuccessfulLogin);
         }
 
         public IResult UserExists(string email)
+        {
+            if (_userService.GetByMail(email) != null)
+            {
+                return new ErrorResult(Messages.UserAlreadyExists);
+            }
+            return new SuccessResult();
+        }
+
+        public IDataResult<AccessToken> CreateAccessToken(User user)
         {
             throw new NotImplementedException();
         }
