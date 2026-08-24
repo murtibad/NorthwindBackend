@@ -5,7 +5,6 @@ using Core.Utilities.Results;
 using Core.Utilities.Security.Hashing;
 using Core.Utilities.Security.Jwt;
 using Entities.Dtos;
-using System;
 
 namespace Business.Concrete
 {
@@ -22,7 +21,21 @@ namespace Business.Concrete
 
         public IDataResult<User> Register(UserForRegisterDto userForRegisterDto, string password)
         {
-            throw new NotImplementedException();
+            byte[] passwordHash, passwordSalt;
+            HashingHelper.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+            var user = new User
+            {
+                Email = userForRegisterDto.Email,
+                FirstName = userForRegisterDto.FirstName,
+                LastName = userForRegisterDto.LastName,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                Status = true
+            };
+
+            _userService.Add(user);
+            return new SuccessDataResult<User>(user, Messages.UserRegistered); // Messages.UserRegistered tanımı yoksa "Kayıt oldu" yazabilirsin.
         }
 
         public IDataResult<User> Login(UserForLoginDto userForLoginDto)

@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Entities.Concrete;
+using Microsoft.AspNetCore.Authorization; // [Authorize] attribute'u için gerekli kütüphane
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("getall")]
+        [Authorize(Roles = "Product.List")] // Hocanın son görselde eklediği rol bazlı yetkilendirme
         public IActionResult GetList()
         {
             var result = _productService.GetList();
